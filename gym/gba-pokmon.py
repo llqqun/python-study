@@ -24,24 +24,28 @@ class GBAPokemonEnv(gym.Env):
         self._action_to_direction = {
             Actions.RIGHT.value: np.array([0, 1]),
             Actions.UP.value: np.array([1, 0]),
+            Actions.UP.value: np.array([-1, 0]),
             Actions.LEFT.value: np.array([0, -1]),
-            Actions.DOWN.value: np.array([-1, 0]),
+            Actions.A.value: np.array([1, -1]),
+            Actions.B.value: np.array([-1, 1]),
+            Actions.Start.value: np.array([1, 1]),
+            Actions.Select.value: np.array([-1, -1]),
         }
         
         # 获取模拟器窗口句柄
         self.hwnd = None
         self.window_rect = None
         self.emulator_process = None
+        self.screen_height = 0
         self.update_window_info()
         # 获取画面高
-        self.screen_height = self.window_rect[3] - self.window_rect[1] - 50
         print('模拟器信息', self.hwnd, self.window_rect, self.emulator_process)
-        print('模拟器画面高度', self.screen_height)
         print("---------------")
         # 定义观察空间 (游戏画面状态)
         if self.window_rect:
             width = self.window_rect[2] - self.window_rect[0]
             height = self.window_rect[3] - self.window_rect[1]
+            self.screen_height = self.window_rect[3] - self.window_rect[1] - 50
             self.observation_space = spaces.Box(low=0, high=255, shape=(height, width, 3), dtype=np.uint8)
         else:
             # 默认大小
