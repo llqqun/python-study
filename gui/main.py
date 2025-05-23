@@ -13,23 +13,12 @@ class MainFrame(wx.Frame):
         self.config = self.load_ini_config()
 
         self.Centre()
-        # 创建一个面板
-        pnl = wx.Panel(self)
-         # 绑定鼠标右键事件
-        pnl.Bind(wx.EVT_RIGHT_DOWN, self.OnRightDown)
-
-        # 在面板上添加一个静态文本
-        st = wx.StaticText(pnl, label="Hello World!")
-        font = st.GetFont()
-        font.PointSize += 10
-        font = font.Bold()
-        st.SetFont(font)
 
         # 创建一个垂直布局的盒子
         # sizer = wx.BoxSizer(wx.VERTICAL)
         # sizer.Add(st, wx.SizerFlags().Border(wx.TOP|wx.LEFT, 25))
         # pnl.SetSizer(sizer)
-
+        self.layout()
         # 创建一个菜单栏
         self.makeMenuBar()
 
@@ -55,6 +44,74 @@ class MainFrame(wx.Frame):
                 self.options[key] = value
         print(f'读取配置文件{self.options}')
         return config
+
+    def layout(self):
+        panel = wx.Panel(self)
+        self.LoadImages(panel)
+        font = wx.SystemSettings.GetFont(wx.SYS_SYSTEM_FONT)
+
+        font.SetPointSize(9)
+
+        vbox = wx.BoxSizer(wx.VERTICAL)
+
+        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        st1 = wx.StaticText(panel, label='Class Name')
+        st1.SetFont(font)
+        hbox1.Add(st1, flag=wx.RIGHT, border=8)
+        tc = wx.TextCtrl(panel)
+        hbox1.Add(tc, proportion=1)
+        st2 = wx.StaticText(panel, label='测试')
+        hbox1.Add(st2, flag=wx.LEFT, border=8)
+
+        vbox.Add(hbox1, flag=wx.EXPAND|wx.LEFT|wx.RIGHT|wx.TOP, border=10)
+
+        vbox.Add((-1, 10))
+
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        st2 = wx.StaticText(panel, label='Matching Classes')
+        st2.SetFont(font)
+        hbox2.Add(st2)
+        vbox.Add(hbox2, flag=wx.LEFT | wx.TOP, border=10)
+
+        vbox.Add((-1, 10))
+
+        hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+        tc2 = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        hbox3.Add(tc2, proportion=1, flag=wx.EXPAND)
+        vbox.Add(hbox3, proportion=1, flag=wx.LEFT|wx.RIGHT|wx.EXPAND,
+            border=10)
+
+        vbox.Add((-1, 25))
+
+        hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+        cb1 = wx.CheckBox(panel, label='Case Sensitive')
+        cb1.SetFont(font)
+        hbox4.Add(cb1)
+        cb2 = wx.CheckBox(panel, label='Nested Classes')
+        cb2.SetFont(font)
+        hbox4.Add(cb2, flag=wx.LEFT, border=10)
+        cb3 = wx.CheckBox(panel, label='Non-Project classes')
+        cb3.SetFont(font)
+        hbox4.Add(cb3, flag=wx.LEFT, border=10)
+        vbox.Add(hbox4, flag=wx.LEFT, border=10)
+
+        vbox.Add((-1, 25))
+
+        hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+        btn1 = wx.Button(panel, label='Ok', size=(70, 30))
+        hbox5.Add(btn1)
+        btn2 = wx.Button(panel, label='Close', size=(70, 30))
+        hbox5.Add(btn2, flag=wx.LEFT|wx.BOTTOM, border=5)
+        vbox.Add(hbox5, flag=wx.ALIGN_RIGHT|wx.RIGHT, border=10)
+
+        panel.SetSizer(vbox)
+
+        return None
+
+    def LoadImages(self, panel):
+        self.mincol = wx.StaticBitmap(panel, wx.ID_ANY,
+            self.setImage('1.jpg', 200, 200))
+        self.mincol.SetPosition((50, 50))
 
     def makeMenuBar(self):
         # 创建一个菜单栏对象
@@ -167,7 +224,7 @@ class MainFrame(wx.Frame):
         img_path = os.path.join(self.dirPath, self.options['imgpath'], img)
         if os.path.exists(img_path):
             # 先用 wx.Image 读取并缩放，再转为 wx.Bitmap
-            img = wx.Image(img_path, wx.BITMAP_TYPE_PNG)
+            img = wx.Image(img_path, wx.BITMAP_TYPE_ANY)
             img = img.Scale(width, height, wx.IMAGE_QUALITY_HIGH)  # 这里设置你想要的宽高
             return wx.Bitmap(img)
         else:
